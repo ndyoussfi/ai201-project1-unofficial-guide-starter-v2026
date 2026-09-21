@@ -57,7 +57,7 @@ No chunk my pipeline produces is shorter than 150 characters
 
 **Why this target:**
 
-My shortest document is 178 characters and my longest is 549, so 150 sits below the shortest whole post in my corpus. Anything under 150 characters is a fragment of a post rather than a whole one, and since each fact in my documents is stated in a single sentence inside a short post, a fragment cannot have an answer in it. I set the floor to be below 183 to make sure that a document that is simply short doesn't count as a failure.
+My shortest document is 178 characters and my longest is 549, so 150 sits below the shortest whole post in my corpus. Anything under 150 characters is a fragment of a post rather than a whole one, and since each fact in my documents is stated in a single sentence inside a short post, a fragment cannot have an answer in it. I set the floor to be below 178 to make sure that a document that is simply short doesn't count as a failure.
 
 ---
 
