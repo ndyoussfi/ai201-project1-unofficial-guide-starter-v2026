@@ -29,18 +29,10 @@
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** 600
+**Overlap:** 0
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
-
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
-
-     Milestone 3. -->
+My documents are short posts containing between 178 and 549 characters. Each one contains a title and a few sentences on a single place or course. I set the chunk size to 600 so that every single post stays whole, and the overlap to 0 because I don't want to split anything. I considered splitting each of the posts where the paragraphs break since many of them cover more than a single topic. I decided against that for two reasons. First, the hall or course name appears only in the title line, so a laundry paragraph split off from housing_morrow_house.txt would not say "Morrow House" anywhere and it would be indistinguishable from the same paragraph in six of the other halls. Second, every piece would come out under 150 characters, which my fourth criterion rules out.
 
 ## Sample Chunks
 
