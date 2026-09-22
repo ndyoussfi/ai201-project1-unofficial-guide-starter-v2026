@@ -29,8 +29,8 @@
 
 ## Chunking Strategy
 
-**Chunk size:** 600
-**Overlap:** 0
+**Chunk size: 600** 
+**Overlap: 0**
 
 My documents are short posts containing between 178 and 549 characters. Each one contains a title and a few sentences on a single place or course. I set the chunk size to 600 so that every single post stays whole, and the overlap to 0 because I don't want to split anything. I considered splitting each of the posts where the paragraphs break since many of them cover more than a single topic. I decided against that for two reasons. First, the hall or course name appears only in the title line, so a laundry paragraph split off from housing_morrow_house.txt would not say "Morrow House" anywhere and it would be indistinguishable from the same paragraph in six of the other halls. Second, every piece would come out under 150 characters, which my fourth criterion rules out.
 
@@ -106,27 +106,36 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** how much does it cost to dry your clothes in Morrow House?
 
 **Answer:**
 
 ```
+(best distance 0.159, cutoff 0.62)
+
+It costs $1.25 to dry your clothes in Morrow House, according to `housing_morrow_house_laundry.txt` and `housing_morrow_house.txt`.
+
+Sources retrieved: housing_aldridge_hall_laundry.txt, housing_innisfree_hall_laundry.txt, housing_morrow_house.txt, housing_morrow_house_laundry.txt, housing_old_brewhouse_laundry.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff: 0.62**
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+My five questions resulted in distances between 0.1586 and 0.4180, and the five out of scope questions between 0.825 and 0.934.
+There is no overlap, so any cutoff inside that 0.407 gap separates them. I put it at 0.62 because it's near the midpoint, which
+leaves about 0.2 of room on each side.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| how much does it cost to dry your clothes in Morrow House | yes | 0.1586 |
+| when should students start the CS 340 term project? | yes | 0.2383 |
+| how many credits are required to graduate? | yes | 0.2914 |
+| how many pages are students allowed to print for free on campus? | yes | 0.3205 |
+| when can students declare their majors? | yes | 0.4180 |
+| What is the capital of Mongolia? | no | 0.825 |
+| What is the recommended dosage of ibuprofen for a headache? | no | 0.844 |
+| Who won the 1994 World Cup? | no | 0.886 |
+| How do I write a for loop in Rust? | no | 0.896 |
+| How do I change the oil in a diesel engine? | no | 0.934 |
 
 ## How I Used AI
 
