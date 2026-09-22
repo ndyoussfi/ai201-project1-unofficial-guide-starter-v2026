@@ -79,25 +79,67 @@ def fallback_split(
 
     return chunks
 
+def split_long_document(text: str, chunk_size: int) -> list[str]:
+    """
+    Split long document's paragraphs into pieces, repeating the title on each one.
+
+    Only runs on documents larger than CHUNK_SIZE. Nothing in campus_life is, but 
+    the title has to be carried across or a piece stops naming the hall or course 
+    it is about.
+    """
+    lines = text.split("\n")
+    title = lines[0].strip()
+    body = "\n".join(lines[1:]).strip()
+    paragraphs = [paragraph.strip() for paragraph in body.split("\n\n") if paragraph.strip()]
+
+    pieces: list[str] = []
+    current = title
+    for paragraph in paragraphs:
+        candidate = f"{current}\n\n{paragraph}"
+        if len(candidate) <= chunk_size or current == title:
+            current = candidate
+        else:
+            pieces.append(current)
+            current = f"{title}\n\n{paragraph}"
+    if current != title: 
+        pieces.append(current)
+
+    return pieces or [text]
+
+
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    One chunk per document because the corpus I picked contains documents which are already chunk sized.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
-
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    The corpus is short posts of 178 to 549 characters, each a title line and a few sentences about one place 
+    or course. Splitting on paragraph breaks strips the hall or course name from every piece except the first, 
+    so a post stays whole unless it's larger than CHUNK_SIZE.
     """
-    return fallback_split(documents)
+
+    chunk_size = config.CHUNK_SIZE
+    chunks: list[Chunk] = []
+    
+    for document in documents:
+        text = document.text.strip()
+
+        if not text:
+            continue
+
+        if len(text) <= chunk_size:
+            pieces = [text]
+        else:
+            pieces = split_long_document(text, chunk_size)
+
+        for index, piece in enumerate(pieces):
+            chunks.append(Chunk(
+                text=piece,
+                source=document.source,
+                index=index,
+                produced_by="chunker.py::split_documents"
+            ))
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
