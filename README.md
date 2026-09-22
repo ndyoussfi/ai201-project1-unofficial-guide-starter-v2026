@@ -34,6 +34,8 @@
 
 My documents are short posts containing between 178 and 549 characters. Each one contains a title and a few sentences on a single place or course. I set the chunk size to 600 so that every single post stays whole, and the overlap to 0 because I don't want to split anything. I considered splitting each of the posts where the paragraphs break since many of them cover more than a single topic. I decided against that for two reasons. First, the hall or course name appears only in the title line, so a laundry paragraph split off from housing_morrow_house.txt would not say "Morrow House" anywhere and it would be indistinguishable from the same paragraph in six of the other halls. Second, every piece would come out under 150 characters, which my fourth criterion rules out.
 
+This costs me something. 23 of my 88 chunks are base documents covering 4 or 5 topics at once, like housing_aldridge_hall.txt, which packs the building, its location, a broken elevator, laundry prices and noise into 380 characters. Those chunks match every question about that hall a little and no question well, and I accepted that in exchange for keeping the hall name attached to every fact.
+
 ## Sample Chunks
 
 <!-- Five chunks, pasted as text. Label each one and name the file it came from
