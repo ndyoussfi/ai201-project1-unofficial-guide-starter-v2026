@@ -1,19 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
-
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
+Noureddine Youssfi - campus_life corpus
 
 ---
 
@@ -21,11 +8,7 @@
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This is a question answering system searching through campus_life, which includes 88 brief writings from students concerning their university, covering dorm buildings, dining hall lines, workloads in specific courses, and important registration deadlines. You simply ask a question, such as the price of laundry in one dorm, and the system finds the posts most relevant to your inquiry, lets you know what those posts have to say, and points you to the actual file from which the answer comes. If the closest chunk is further away than my 0.62 cutoff, the question is refused before it ever reaches the model, so the system says it does not have enough information instead of generating an answer based on general knowledge.
 
 ## Chunking Strategy
 
@@ -37,15 +20,6 @@ My documents are short posts containing between 178 and 549 characters. Each one
 This costs me something. 23 of my 88 chunks are base documents covering 4 or 5 topics at once, like housing_aldridge_hall.txt, which packs the building, its location, a broken elevator, laundry prices and noise into 380 characters. Those chunks match every question about that hall a little and no question well, and I accepted that in exchange for keeping the hall name attached to every fact.
 
 ## Sample Chunks
-
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-
-     Milestone 3. -->
 
 **Chunk 1** — source: `admin_add_drop_deadline.txt#0` — produced by: `chunker.py::split_documents`
 
@@ -103,9 +77,6 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
 **Question:** how much does it cost to dry your clothes in Morrow House?
 
 **Answer:**
@@ -139,18 +110,9 @@ leaves about 0.2 of room on each side.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
+**1.** I asked Claude to check my first test question, "what shows up on your record if you drop mid semester?", and it approved the question and suggested `expects: "week two"`. I pushed back, because "week two" is not an answer to that question, it is a circumstance, and an answer about adding a course would contain the same string. That disagreement is why I dropped the question entirely and picked a document where the answer and the `expects` string are the same thing.
 
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
-**1.**
-
-**2.**
+**2.** Before I ran anything, I asked Claude to help me reason about why my gate criterion should be 4 of 5. It predicted that the ibuprofen and Rust questions would be the two most likely to slip through, because my corpus has a health centre document and several CS course documents. When I actually ran the five out of scope questions, all five were refused, and the Rust question came back at 0.896, the second furthest away of the five. I rewrote the reason around the distances I measured instead of the prediction, and tightened the target to 5 of 5.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
