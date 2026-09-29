@@ -217,11 +217,11 @@ chunked  88 chunks, 317 characters on average (shortest 178, longest 549), produ
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer. | MET | All 3 runs returned 5 of 5 against a target of only 4 of 5, scored by scorer.py::judge. The correct chunk came back first on every question, and the 3 runs are identical because the same question always retrieves the same chunks. |
+| 2 | Every answer the system produces names at least one source document. | MET | All the answers from all 3 runs named a file, which I checked in the transcript. The wording changed in every run and the filename was always there. |
+| 3 | When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in all 5 tries. | MET | All 5 questions refused as measured by `run_eval.py::check_out_of_scope` against the cutoff, with Mongolia being the closest at 0.825, 0.205 above the cutoff. |
+| 4 | No chunk my pipeline produces is shorter than 150 characters | MET | None of the chunks produced is shorter than 150 characters, with the shortest being 178, 28 above the floor as measured by chunker.py::describe via python app.py index. My chunker keeps every post whole, meaning the shortest chunk is the shortest document. |
+| 5 | For at least 4 of my 5 test questions, the file named in the answer is the file that actually contains the fact. | MET | All the answers from all 3 runs cited the file that actually contains the fact. I checked each file and confirmed the fact is in it. 3 of 5 retrieved chunks for the Morrow House question were other halls' laundry files carrying $1.75 and $1.50 for the cost to dry. compared to $1.25 as expected, yet all 3 runs cited only Morrow House's files. |
 
 ## Diagnoses
 
