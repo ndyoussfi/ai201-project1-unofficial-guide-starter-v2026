@@ -82,7 +82,7 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 **Answer:**
 
 ```
-(best distance 0.159, cutoff 0.62)
+(best distance 0.232, cutoff 0.62)
 
 It costs $1.25 to dry your clothes in Morrow House, according to `housing_morrow_house_laundry.txt` and `housing_morrow_house.txt`.
 
@@ -91,13 +91,13 @@ Sources retrieved: housing_aldridge_hall_laundry.txt, housing_innisfree_hall_lau
 
 **My relevance cutoff: 0.62**
 
-My five questions resulted in distances between 0.1586 and 0.4180, and the five out of scope questions between 0.825 and 0.934.
+My five questions resulted in distances between 0.232 and 0.4180, and the five out of scope questions between 0.825 and 0.934.
 There is no overlap, so any cutoff inside that 0.407 gap separates them. I put it at 0.62 because it's near the midpoint, which
 leaves about 0.2 of room on each side.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-| how much does it cost to dry your clothes in Morrow House | yes | 0.1586 |
+| how much does it cost to dry your clothes in Morrow House? | yes | 0.2323 |
 | when should students start the CS 340 term project? | yes | 0.2383 |
 | how many credits are required to graduate? | yes | 0.2914 |
 | how many pages are students allowed to print for free on campus? | yes | 0.3205 |
@@ -107,6 +107,8 @@ leaves about 0.2 of room on each side.
 | Who won the 1994 World Cup? | no | 0.886 |
 | How do I write a for loop in Rust? | no | 0.896 |
 | How do I change the oil in a diesel engine? | no | 0.934 |
+
+**Corrected in unit 2:** the Morrow House row originally read 0.1586, which was measured with `app.py retrieve` on the question without its question mark, while `questions.py` stores it with the question mark, so `run_eval.py` embedded a different string and returned 0.2323. Same file at rank 1 both times. The question mark alone moved the distance by 0.074.
 
 ## How I Used AI
 
@@ -123,10 +125,6 @@ leaves about 0.2 of room on each side.
 
 # Unit 2
 
-<!-- These sections get ADDED to what's already above. Don't delete or rewrite
-     unit 1 — the point is that someone can see what you said before you knew
-     how it went. -->
-
 ## Run Log — Before
 
 <!-- Your five criteria, three runs each. `python run_eval.py --label before`
@@ -141,15 +139,70 @@ leaves about 0.2 of room on each side.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk shorter than 150 characters | all chunks | 178 | 178 | 178 | MET |
+| 5. Source named is the source the answer came from | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+### Real output
+
+**Criteria 1 and 3** — produced by `run_eval.py::main` and `run_eval.py::check_out_of_scope`, scored by `scorer.py::judge`. Full file:
+`results/run_2026-09-28_1824_before.md`.
+
+```
+how many pages are students allowed to print for free on campus?
+  run 1: pass  (best distance 0.321)
+  run 2: pass  (best distance 0.321)
+  run 3: pass  (best distance 0.321)
+
+when can students declare their majors?
+  run 1: pass  (best distance 0.418)
+  run 2: pass  (best distance 0.418)
+  run 3: pass  (best distance 0.418)
+
+how many credits are required to graduate?
+  run 1: pass  (best distance 0.291)
+  run 2: pass  (best distance 0.291)
+  run 3: pass  (best distance 0.291)
+
+when should students start the CS 340 term project?
+  run 1: pass  (best distance 0.238)
+  run 2: pass  (best distance 0.238)
+  run 3: pass  (best distance 0.238)
+
+how much does it cost to dry your clothes in Morrow House?
+  run 1: pass  (best distance 0.232)
+  run 2: pass  (best distance 0.232)
+  run 3: pass  (best distance 0.232)
+
+Out-of-scope questions (the gate should refuse these):
+  refused  (best distance 0.825)  What is the capital of Mongolia?
+  refused  (best distance 0.934)  How do I change the oil in a diesel engine?
+  refused  (best distance 0.886)  Who won the 1994 World Cup?
+  refused  (best distance 0.844)  What is the recommended dosage of ibuprofen for a headache?
+  refused  (best distance 0.896)  How do I write a for loop in Rust?
+  -> gate refused 5 of 5
+```
+
+**Criteria 2 and 5** — produced by `generate.py::answer_from_chunks`, citation checked by hand. From the `## Real output` section of the same file:
+
+```
+### how much does it cost to dry your clothes in Morrow House? — run 1
+
+- Best distance: 0.2323 (passed the gate)
+- Sources retrieved: housing_aldridge_hall_laundry.txt, housing_innisfree_hall_laundry.txt, housing_morrow_house.txt, housing_morrow_house_laundry.txt, housing_old_brewhouse_laundry.txt
+
+It costs $1.25 to dry your clothes in Morrow House (sources: housing_morrow_house_laundry.txt and housing_morrow_house.txt).
+```
+
+Three of the five retrieved chunks were other halls' laundry documents, each with a different price. The answer names Morrow House's two files and both contain $1.25, so this counts for criterion 5 as well as criterion 2.
+
+**Criterion 4** — produced by `chunker.py::describe`, via `python app.py index`. This one is not measured by `run_eval.py`.
+
+```
+chunked  88 chunks, 317 characters on average (shortest 178, longest 549), produced by chunker.py::split_documents
+```
 
 ## Verdicts
 
