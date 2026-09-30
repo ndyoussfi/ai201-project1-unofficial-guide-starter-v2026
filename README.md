@@ -116,6 +116,8 @@ leaves about 0.2 of room on each side.
 
 **2.** Before I ran anything, I asked Claude to help me reason about why my gate criterion should be 4 of 5. It predicted that the ibuprofen and Rust questions would be the two most likely to slip through, because my corpus has a health centre document and several CS course documents. When I actually ran the five out of scope questions, all five were refused, and the Rust question came back at 0.896, the second furthest away of the five. I rewrote the reason around the distances I measured instead of the prediction, and tightened the target to 5 of 5.
 
+**3.** I asked Claude to review my scorer. It found that my retrieval fallback read `getattr(results, "text", "")` instead of `getattr(result, ...)`, so it was asking the list for a field that only the items in it have. That branch returned an empty string on every iteration and could never match anything, and nothing in the output would have told me. I fixed the variable name and the branch started working.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -249,17 +251,18 @@ The criterion I believe I should tighten is criterion 4, not by changing the num
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+Criterion 4 is the only one missed. My chunker now splits every post at its paragraph breaks, so the shortest chunk is 63 characters, which is less than 150.
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
+What I would do is keep the paragraph split but merge any piece containing less than 150 characters back into the piece next to it, so a short fragment never stands on its own. What I would not do is lower the floor from 150 characters, since I missed that number rather than finding it unmeasurable.
 
-     Milestone 5. -->
+I stopped there because this unit allows one change and I had already spent it on the chunking.
+
+One thing that is not a miss but did get worse: the gate's margin fell from 0.205 to 0.167, because smaller chunks are closer to everything, including questions my corpus does not cover. Criterion 3 still passed, but there is less room than there was before.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+I would write criterion 1 differently. The target of 4 of 5 was not the problem, the question set was. All 5 of my questions ask about a fact stated in exactly one document, in wording close to the document's own, so there was no room for retrieval to fail and nothing for the 3 runs to reveal.
 
-     Milestone 5. -->
+I would also write criterion 3 differently. All 5 out of scope questions are about Mongolia, diesel engines, the World Cup, ibuprofen and Rust, which share nothing with a campus corpus. A question that sounds like my corpus but is not in it would have put the gate under real pressure.
+
+Criterion 4 I would write as a count of topics per chunk rather than a character floor, for the reason in my diagnoses.
