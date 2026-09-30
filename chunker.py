@@ -79,45 +79,35 @@ def fallback_split(
 
     return chunks
 
-def split_long_document(text: str, chunk_size: int) -> list[str]:
+def split_into_paragraphs(text: str) -> list[str]:
     """
-    Split long document's paragraphs into pieces, repeating the title on each one.
+    One piece per paragraph, with the document's title repeated on each.
 
-    Only runs on documents larger than CHUNK_SIZE. Nothing in campus_life is, but 
-    the title has to be carried across or a piece stops naming the hall or course 
-    it is about.
+    The title line is the only place a hall or course is named, so without it a
+    laundry paragraph from housing_morrow_house.txt would not say "Morrow House"
+    anywhere and would be indistinguishable from six other halls.
     """
     lines = text.split("\n")
     title = lines[0].strip()
     body = "\n".join(lines[1:]).strip()
     paragraphs = [paragraph.strip() for paragraph in body.split("\n\n") if paragraph.strip()]
 
-    pieces: list[str] = []
-    current = title
-    for paragraph in paragraphs:
-        candidate = f"{current}\n\n{paragraph}"
-        if len(candidate) <= chunk_size or current == title:
-            current = candidate
-        else:
-            pieces.append(current)
-            current = f"{title}\n\n{paragraph}"
-    if current != title: 
-        pieces.append(current)
+    if not paragraphs:
+        return [text]
 
-    return pieces or [text]
-
-
+    return [f"{title}\n\n{paragraph}" for paragraph in paragraphs]
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    One chunk per document because the corpus I picked contains documents which are already chunk sized.
+    One chunk per paragraph, with the title repeated on each.
 
-    The corpus is short posts of 178 to 549 characters, each a title line and a few sentences about one place 
-    or course. Splitting on paragraph breaks strips the hall or course name from every piece except the first, 
-    so a post stays whole unless it's larger than CHUNK_SIZE.
+    Unit 1 kept every post whole. 23 of the 88 chunks that produced covered four
+    or five topics at once, so they matched every question a little and no
+    question well. This splits each post at its paragraph breaks and carries the
+    title onto every piece, so a chunk covers one topic and still names what it
+    is about.
     """
 
-    chunk_size = config.CHUNK_SIZE
     chunks: list[Chunk] = []
     
     for document in documents:
@@ -126,10 +116,7 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
         if not text:
             continue
 
-        if len(text) <= chunk_size:
-            pieces = [text]
-        else:
-            pieces = split_long_document(text, chunk_size)
+        pieces = split_into_paragraphs(text)
 
         for index, piece in enumerate(pieces):
             chunks.append(Chunk(

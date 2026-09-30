@@ -222,12 +222,9 @@ The criterion I believe I should tighten is criterion 4, not by changing the num
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I replaced keeping the posts whole strategy in split_documents. Now, it splits each post at its paragraph breaks and prepends the title to every piece. Indexed as the paragraphs variant so both chunkings are queryable.
 
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+**Why I picked it:** 23 of 88 chunks covered four or five topics at once, so splitting on paragraphs with the title attached makes each chunk cover one topic while still naming its hall.
 
 ### Run Log — After
 
@@ -236,20 +233,19 @@ The criterion I believe I should tighten is criterion 4, not by changing the num
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk shorter than 150 characters | all chunks | 63 | 63 | 63 | MISSED |
+| 5. Source named is the source the answer came from | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
-**Did it help?**
+**Did it help?** No. Four pieces of evidence and one gain:
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
-
-     Milestone 4. -->
+- 3 of 5 distances didn't move, because admin_printing_quota.txt and the 2 other admin documents are a title and 1 paragraph, so splitting produced an identical chunk
+- criterion 4 broke: shortest chunk 63 against a floor of 150 characters.
+- the gate's margin shrank, closest out of scope went down from 0.825 to 0.787, so room above the cutoff fell from 0.205 to 0.167
+- top-k now returns duplicate chunks from the same document, so 5 slots gave 4 distinct documents
+- one gain: prompt tokens fell from 8,469 to 6,420
 
 ## What's Still Broken
 
