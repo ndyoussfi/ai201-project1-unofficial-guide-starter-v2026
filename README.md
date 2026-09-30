@@ -127,16 +127,6 @@ leaves about 0.2 of room on each side.
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
 | 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
@@ -206,15 +196,6 @@ chunked  88 chunks, 317 characters on average (shortest 178, longest 549), produ
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
-
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
 | 1 | For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer. | MET | All 3 runs returned 5 of 5 against a target of only 4 of 5, scored by scorer.py::judge. The correct chunk came back first on every question, and the 3 runs are identical because the same question always retrieves the same chunks. |
@@ -225,23 +206,19 @@ chunked  88 chunks, 317 characters on average (shortest 178, longest 549), produ
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+None of my criteria missed, they all passed in all 3 runs. 3 of 5 could not have failed. 
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+Criterion 1 is deterministic. The same question always retrieves the same chunks, and the correct chunk came back first on all the questions. 
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
+Criterion 3 has a room of 0.205 since the closest out of scope question came back at 0.825, with a 0.62 cutoff. But all of 5 out of scope questions are from unrelated topics, so testing them was really easy.
 
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
+Criterion 4 was impossible to miss because my chunker keeps every post whole, so the shortest chunk is the shortest document. No run of the pipeline could produce shorter than 150 because the shortest is 178. 
 
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
+Criteria 2 and 5 were the only 2 at risk. Both depend on the generated answer, which the model reworded between runs, and all 5 answers from all 3 runs passed. 
 
-     Milestone 3. -->
+My prediction about which question would be hard was wrong. My reasoning for criterion 1 was that Morrow House would be the miss because 6 other halls have laundry documents identical to it except for the price line. Morrow House came back at 0.232, the best distance of my 5 questions, and the closest wrong hall at 0.4099. The hall name in the title line turned out to separate those documents better than I expected.
+
+The criterion I believe I should tighten is criterion 4, not by changing the number, since raising it above 150 would not help, because the floor is not what makes it easy, but keeping every post whole is. A version that bites would name how many topics a chunk covers, since 23 of my 88 chunks cover 4 or 5 topics at once and match every question a little and no question well.
 
 ## The Improvement
 
